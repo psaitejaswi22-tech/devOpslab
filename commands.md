@@ -1,61 +1,90 @@
-# Experiment 9 – Kubernetes Deployment Commands
+# Experiment 12 – Selenium Testing of a Containerized Application
 
-## 1. Navigate to the Experiment 9 folder
-
-```bash
-cd ..
-cd Exp9
-pwd
-ls
-```
-
-## 2. Deploy the application
+## 1. Navigate to the project directory
 
 ```bash
-kubectl apply -f deployment.yaml
-kubectl apply -f service.yaml
+cd ~/Desktop/Devops-Lab
+mkdir Exp12
+cd Exp12
 ```
 
-## 3. Check the pods
+## 2. Create the Maven project
 
 ```bash
-kubectl get pods -l app=myapp
+mvn archetype:generate \
+  -DgroupId=com.devops \
+  -DartifactId=Exp12 \
+  -DarchetypeArtifactId=maven-archetype-quickstart \
+  -DinteractiveMode=false
 ```
-
-## 4. Check the service
 
 ```bash
-kubectl get services myapp-service
+cd Exp12
 ```
 
-## 5. Display deployment details
+## 3. Locate the Maven project file
 
 ```bash
-kubectl describe deployment myapp
+find . -name pom.xml
 ```
 
-## 6. View application logs
+## 4. Find Java files
 
 ```bash
-kubectl logs -l app=myapp --tail=10
+find . -name "*.java"
 ```
 
-## 7. Verify the deployment
+## 5. Rename the Selenium test file
 
 ```bash
-kubectl get deployment myapp
-kubectl get pods -l app=myapp
-kubectl get service myapp-service
+mv src/test/java/com/devops/Maintest.java src/test/java/com/devops/MainTest.java
 ```
 
-## Result
+## 6. Copy the webpage from Experiment 11
 
-The Kubernetes deployment was successful. Three replicas were created and all three pods reached the `Running` state. The `myapp-service` ClusterIP service was also created successfully.
+```bash
+cp ../../Exp11/program.html .
+```
 
-**Image used:** `nginx:latest`
+## 7. Build the Docker image
 
-**Replicas:** 3
+```bash
+docker build -t exp12-app .
+```
 
-**Service type:** ClusterIP
+## 8. Run the Docker container
 
-**Container port:** 80
+```bash
+docker run -d --name exp12-container -p 8080:80 exp12-app
+```
+
+## 9. Check running containers
+
+```bash
+docker ps
+```
+
+## 10. Run Selenium test cases
+
+```bash
+mvn clean test
+```
+
+## 11. View test results
+
+```bash
+cat target/surefire-reports/*.txt
+```
+
+## 12. Stop the Docker container
+
+```bash
+docker stop exp12-container
+```
+
+## Expected result
+
+- Docker container runs the webpage.
+- Selenium opens Chrome and executes the test cases.
+- Maven reports `BUILD SUCCESS`.
+- Both tests pass with zero failures and errors.
